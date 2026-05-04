@@ -1,7 +1,7 @@
 https://www.youtube.com/watch?v=h9amL4JXpoY
 
 
-Thinkscrip code:
+Thinkscrip code: TTM Squeeze Scan Setup
 
 def squeeze = if TTM_Squeeze().SqueezeAlert == 0 then 1 else 0;
 def sumSqueeze = Sum(squeeze, 10);
