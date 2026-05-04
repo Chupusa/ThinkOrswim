@@ -4,3 +4,48 @@ https://tos.mx/aZWyZuL
 
 5 Squeeze Dots in a Row - Bearish Scan
 https://tos.mx/qjwxeVs
+
+
+# Squeeze Alert == 0 <-- scan for 5
+
+# Escaneo Alcista
+
+def fiveDotsInARow = if Sum(TTM_Squeeze().SqueezeAlert, 5) == 0 then 1 else 0; 
+
+def EMA8 = ExpAverage(close,8);
+def EMA21 = ExpAverage(close,21);
+def EMA34 = ExpAverage(close,34);
+
+def SMA50 = SimpleMovingAvg(close, 50);
+def SMA200 = SimpleMovingAvg(close, 200);
+
+def bullStacked = if EMA8 > EMA21 and EMA21 > EMA34 and SMA50 > SMA200 then 1 else 0;
+def bearStacked = if EMA8 < EMA21 and EMA21 < EMA34 and SMA50 < SMA200 then 1 else 0;
+
+plot signal = fiveDotsInARow and bullStacked;
+
+
+
+# Escaneo Bajista
+
+def fiveDotsInARow = if Sum(TTM_Squeeze().SqueezeAlert, 5) == 0 then 1 else 0; 
+
+def EMA8 = ExpAverage(close,8);
+def EMA21 = ExpAverage(close,21);
+def EMA34 = ExpAverage(close,34);
+
+def SMA50 = SimpleMovingAvg(close, 50);
+def SMA200 = SimpleMovingAvg(close, 200);
+
+def bullStacked = if EMA8 > EMA21 and EMA21 > EMA34 and SMA50 > SMA200 then 1 else 0;
+def bearStacked = if EMA8 < EMA21 and EMA21 < EMA34 and SMA50 < SMA200 then 1 else 0;
+
+plot signal = fiveDotsInARow and bearStacked;
+
+
+
+
+
+
+
+
