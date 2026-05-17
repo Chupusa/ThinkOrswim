@@ -1,0 +1,12 @@
+# Scan busca aumento de Volumen Positivo
+# Línea 1: Variable booleana de volumen que mide si nuestra condición de volumen es verdadera;
+
+# Vol Condicion #1: Volume > VolumgAvg
+# Vol Condicion #2: Volume > Volume(1)
+# Vol Condicion #3: Close > Close(1) for Bullish; Close < Close(1) for Bearish
+
+def volumeCondition = VolumeAvg().vol > VolumeAvg().volavg and volumeavg(). vol > volumeavg().vol[1] and close < close[1];
+
+#Línea 2: Representación gráfica del resultado en el que la variable booleana anterior es verdadera durante 3 barras consecutivas (vamos a usar la función suma).
+
+plot signal = sum(volumecondition, 3) == 3;
