@@ -1,0 +1,72 @@
+# TTM_Squeeze_Pro_3
+# Assembled by TheBewb using existing Mobius Squeeze Momentum coding and "squeeze" concept made popular by John Carter.
+# This version includes 3 squeeze levels: Pre-Squeeze (Low), Original (Mid), and Extreme (High) Compression.
+
+declare lower;
+
+input price = close;
+input length = 20;
+input Num_Dev_Dn = -2.0;
+input Num_Dev_Up = 2.0;
+input averageType = AverageType.SIMPLE;
+input displace = 0;
+
+def sDev = StDev(data = price[-displace], length = length);
+def MidLineBB = MovingAverage(averageType, data = price[-displace], length = length);
+def LowerBandBB = MidLineBB + Num_Dev_Dn * sDev;
+def UpperBandBB = MidLineBB + Num_Dev_Up * sDev;
+
+input factorHigh = 1.0;
+input factorMid = 1.5;
+input factorLow = 2.0;
+input trueRangeAverageType = AverageType.SIMPLE;
+
+def shiftHigh = factorHigh * MovingAverage(trueRangeAverageType, TrueRange(high, close, low), length);
+def shiftMid = factorMid * MovingAverage(trueRangeAverageType, TrueRange(high, close, low), length);
+def shiftLow = factorLow * MovingAverage(trueRangeAverageType, TrueRange(high, close, low), length);
+def average = MovingAverage(averageType, price, length);
+def Avg = average[-displace];
+
+def UpperBandKCLow = average[-displace] + shiftLow[-displace];
+def LowerBandKCLow = average[-displace] - shiftLow[-displace];
+def UpperBandKCMid = average[-displace] + shiftMid[-displace];
+def LowerBandKCMid = average[-displace] - shiftMid[-displace];
+def UpperBandKCHigh = average[-displace] + shiftHigh[-displace];
+def LowerBandKCHigh = average[-displace] - shiftHigh[-displace];
+
+def K = (Highest(high, length) + Lowest(low, length)) / 2 + ExpAverage(close, length);
+def momo = Inertia(price - K / 2, length);
+
+def pos = momo >= 0;
+def neg = momo < 0;
+def up = momo >= momo[1];
+def dn = momo < momo[1];
+
+# --- Definición de los 3 niveles de Squeeze Pro (baja, media, alta compresión) ---
+def preSqueeze      = LowerBandBB > LowerBandKCLow and UpperBandBB < UpperBandKCLow;
+def originalSqueeze = LowerBandBB > LowerBandKCMid and UpperBandBB < UpperBandKCMid;
+def extrSqueeze     = LowerBandBB > LowerBandKCHigh and UpperBandBB < UpperBandKCHigh;
+
+def PosUp = pos and up;
+def PosDn = pos and dn;
+def NegDn = neg and dn;
+def NegUp = neg and up;
+
+# --- Visualización de los puntos del Squeeze ---
+plot squeezeLine = 0;
+squeezeLine.SetPaintingStrategy(PaintingStrategy.POINTS);
+squeezeLine.SetLineWeight(3);
+squeezeLine.AssignValueColor(if extrSqueeze then Color.RED 
+                              else if originalSqueeze then Color.YELLOW 
+                              else if preSqueeze then Color.DARK_ORANGE 
+                              else Color.GRAY);
+
+# --- Histograma de Momento (útil para ver la dirección del "fired") ---
+plot momentum = momo;
+momentum.SetPaintingStrategy(PaintingStrategy.HISTOGRAM);
+momentum.SetLineWeight(3);
+momentum.AssignValueColor(if PosUp then Color.GREEN 
+                          else if PosDn then Color.DARK_GREEN 
+                          else if NegDn then Color.DARK_ORANGE 
+                          else if NegUp then Color.YELLOW 
+                          else Color.YELLOW);
